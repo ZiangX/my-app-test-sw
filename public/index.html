@@ -26,6 +26,28 @@
   <body>
     
     <script>
+      (function(open) {
+  XMLHttpRequest.prototype.open = function(XMLHttpRequest) {
+    var self = this;
+    console.log('reqesthttp are triggered')
+    this.addEventListener("readystatechange", function() {
+      if (this.responseText.length > 0 && 
+          this.readyState == 4 && 
+          this.responseURL.indexOf('www.google.com') >= 0) {
+
+        Object.defineProperty(self, 'response', {
+          get: function() { return bValue; },
+          set: function(newValue) { bValue = newValue; },
+          enumerable: true,
+          configurable: true
+        });
+        self.response = 'updated value' // Intercepted Value 
+      }
+    }, false);
+    open.apply(this, arguments);
+  };
+})(XMLHttpRequest.prototype.open);
+      
       const { fetch: origFetch } = window;
       window.fetch = async (...args) => {
         console.log("fetch called with args:", args);
